@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarryNet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{
+    --primary:#B91C1C;
+    --primary-2:#7F1D1D;
+    --accent:#EF4444;
+    --accent-dark:#DC2626;
+    --amber:#F2A33C;
+    --amber-dark:#8A5A14;
+    --green:#27AE80;
+    --green-dark:#155B43;
+    --bg:#FFF5F5;
+    --card:#FFFFFF;
+    --line:#F3D2D2;
+    --ink:#1A1414;
+    --ink-soft:#7A5B5B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .app{max-width:1200px;margin:0 auto;padding:24px 20px 60px;}
+
+  /* ============ LOGIN SCREEN ============ */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(239,68,68,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(127,29,29,0.10), transparent 45%),
+      var(--bg);
+  }
+  .login-card{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:34px 32px 30px;
+    box-shadow:0 12px 32px rgba(127,29,29,0.12);
+  }
+  .login-badge{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--primary) 0%, var(--primary-2) 100%);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:18px;
+    margin-bottom:18px;
+  }
+  .login-card h1{
+    margin:0 0 6px;
+    font-size:21px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .login-card p.sub{
+    margin:0 0 26px;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .login-field{margin-bottom:16px;}
+  .login-field label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:7px;
+  }
+  .login-field input{
+    width:100%;
+    padding:11px 13px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    font-size:14px;
+    font-family:inherit;
+    color:var(--ink);
+    background:#FFFDFD;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .login-field input:focus{
+    border-color:var(--accent-dark);
+    box-shadow:0 0 0 3px rgba(220,38,38,0.12);
+  }
+  .login-error{
+    font-size:12px;
+    color:var(--accent-dark);
+    margin:-8px 0 14px;
+    min-height:14px;
+  }
+  .login-submit{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid var(--primary);
+    background:var(--primary);
+    color:#fff;
+    font-family:inherit;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .login-submit:hover{background:var(--primary-2);}
+  /* ============ END LOGIN SCREEN ============ */
+
+  header.top{
+    background:linear-gradient(135deg,var(--primary) 0%, var(--primary-2) 100%);
+    border-radius:18px;
+    padding:28px 32px;
+    color:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+    box-shadow:0 8px 24px rgba(127,29,29,0.18);
+  }
+  header.top h1{
+    margin:0;
+    font-size:24px;
+    line-height:1.25;
+    font-weight:800;
+    max-width:620px;
+  }
+  header.top p{
+    margin:8px 0 0;
+    color:#FDE2E2;
+    font-size:13.5px;
+    max-width:580px;
+  }
+  .header-right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:10px;
+  }
+
+  /* Profile Bar */
+  .profile-bar{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 22px;
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+  .profile-info{display:flex;align-items:center;gap:14px;}
+  .profile-avatar{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;
+  }
+  .profile-details h4{margin:0;font-size:15px;font-weight:700;}
+  .profile-details p{margin:2px 0 0;font-size:12.5px;color:var(--ink-soft);}
+  .plan-badge{
+    background:#FFF1F1;
+    border:1px solid #FCA5A5;
+    color:#7F1D1D;
+    padding:6px 14px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:12.5px;
+  }
+
+  section{margin-top:26px;}
+  h2.section-title{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--ink-soft);
+    font-weight:700;
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+    box-shadow:0 2px 8px rgba(185,28,28,0.04);
+  }
+
+  .controls-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .field .val{
+    font-family:'Consolas','Courier New',monospace;
+    font-weight:700;
+    color:var(--primary);
+    float:right;
+  }
+  input[type=range]{
+    width:100%;
+    accent-color:var(--accent-dark);
+  }
+
+  .btn-row{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
+  button{
+    font-family:inherit;
+    font-weight:700;
+    font-size:13px;
+    border-radius:10px;
+    padding:11px 18px;
+    cursor:pointer;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--primary);
+    transition:all .15s ease;
+  }
+  button:hover{background:#FFF5F5;}
+  button:active{transform:scale(.97);}
+  button.primary{background:var(--primary);color:#fff;border-color:var(--primary);}
+  button.primary:hover{background:var(--primary-2);}
+  button.accent{background:var(--accent-dark);color:#fff;border-color:var(--accent-dark);}
+  button.success{background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+  button.ghost{background:transparent;}
+
+  .systems{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-top:20px;
+  }
+  @media (max-width:760px){ .systems{grid-template-columns:1fr;} }
+
+  .sys-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 4px 12px rgba(185,28,28,0.05);
+  }
+  .sys-card.existing{border-top:4px solid var(--amber);}
+  .sys-card.proposed{border-top:4px solid var(--accent-dark);}
+  .sys-card .tag{
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+  .sys-card.existing .tag{color:var(--amber-dark);}
+  .sys-card.proposed .tag{color:var(--accent-dark);}
+  .sys-card h3{margin:6px 0 16px;font-size:16.5px;}
+
+  .tank-row{display:flex;align-items:flex-end;gap:18px;}
+  .tank{
+    width:64px;
+    height:160px;
+    border-radius:10px;
+    background:#FBEAEA;
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .tank .fill{
+    position:absolute;
+    bottom:0;left:0;right:0;
+    transition:height .5s ease;
+  }
+  .tank .fill.quota{background:var(--accent);}
+  .tank .fill.carry{background:var(--green);}
+  .tank-label{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+
+  .metrics{flex:1;display:flex;flex-direction:column;gap:10px;}
+  .metric{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--line);
+    padding-bottom:8px;
+  }
+  .metric:last-child{border-bottom:none;padding-bottom:0;}
+  .metric .label{font-size:12.5px;color:var(--ink-soft);}
+  .metric .num{
+    font-family:'Consolas','Courier New',monospace;
+    font-weight:700;
+    font-size:15px;
+  }
+  .num.amber{color:var(--amber-dark);}
+  .num.green{color:var(--green-dark);}
+  .num.navy{color:var(--primary);}
+
+  .pipeline{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin-top:16px;
+  }
+  @media (max-width:900px){ .pipeline{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:520px){ .pipeline{grid-template-columns:1fr 1fr;} }
+  .step{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px;
+    font-size:12px;
+    color:var(--ink-soft);
+    opacity:.5;
+    transition:all .25s ease;
+  }
+  .step .n{
+    display:inline-flex;
+    width:22px;height:22px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    font-size:11px;
+    font-weight:800;
+    align-items:center;justify-content:center;
+    margin-bottom:8px;
+    margin-right:8px;
+  }
+  .step.active{
+    opacity:1;
+    border-color:var(--accent-dark);
+    box-shadow:0 0 0 2px rgba(239,68,68,0.2) inset;
+    color:var(--ink);
+    font-weight:600;
+  }
+  .step.active .n{background:var(--accent-dark);}
+
+  .log-wrap{overflow-x:auto;margin-top:14px;max-height:360px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+  th:first-child,td:first-child{text-align:left;}
+  th{color:var(--ink-soft);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;background:#FFF7F7;position:sticky;top:0;}
+  td.amber{color:var(--amber-dark);font-weight:700;}
+  td.green{color:var(--green-dark);font-weight:700;}
+
+  .summary-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-top:18px;
+  }
+  @media (max-width:760px){ .summary-grid{grid-template-columns:1fr;} }
+  .stat{
+    background:#FFF7F7;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+  }
+  .stat .lab{font-size:11.5px;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .stat .v{font-size:24px;font-weight:800;color:var(--primary);margin-top:6px;font-family:'Consolas','Courier New',monospace;}
+  .stat .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+
+  /* Modal */
+  .modal-backdrop{
+    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(127,29,29,0.45);z-index:999;
+    align-items:center;justify-content:center;
+  }
+  .modal-card{
+    background:#fff;border-radius:16px;padding:28px;max-width:440px;width:90%;
+    box-shadow:0 12px 32px rgba(127,29,29,0.2);
+  }
+  .plan-opt{
+    border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;
+    cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  }
+  .plan-opt:hover{border-color:var(--accent-dark);background:#FFF5F5;}
+  .plan-opt.selected{border-color:var(--accent-dark);background:#FFE9E9;font-weight:700;}
+
+  footer{margin-top:40px;text-align:center;color:var(--ink-soft);font-size:12px;}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-badge">CN</div>
+    <h1>Sign in to CarryNet</h1>
+    <p class="sub">Enter your name and phone number to load your prepaid data carry-forward dashboard.</p>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginName">Full Name</label>
+        <input type="text" id="loginName" placeholder="e.g. Abiya" autocomplete="off" required>
+      </div>
+      <div class="login-field">
+        <label for="loginPhone">Phone Number</label>
+        <input type="tel" id="loginPhone" placeholder="+91 98765 43210" autocomplete="off" required>
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <button type="submit" class="login-submit">Continue to Dashboard</button>
+    </form>
+  </div>
+</div>
+<!-- ============ END LOGIN SCREEN ============ -->
+
+<div class="app" id="mainApp" style="display:none;">
+
+  <!-- Header -->
+  <header class="top">
+    <div>
+      <h1>CarryNet</h1>
+      <p>A persistent simulation of prepaid telecom data rollover, preventing unutilized daily quota expiration at midnight.</p>
+    </div>
+    <div class="header-right">
+      <div style="display:flex;gap:8px;">
+        <button class="accent" style="padding:7px 14px;font-size:12px;" onclick="openRechargeModal()">⚡ Recharge Plan</button>
+        <button style="padding:7px 14px;font-size:12px;background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.3);" onclick="openLogoutModal()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- User Profile Info Bar -->
+  <div class="profile-bar">
+    <div class="profile-info">
+      <div class="profile-avatar">U</div>
+      <div class="profile-details">
+        <h4 id="userName">Prepaid Subscriber</h4>
+        <p id="userPhone">+91 98765 43210</p>
+      </div>
+    </div>
+    <div class="plan-badge" id="activePlanBadge">
+      Active Plan: Popular Hero (2.0 GB/Day &bull; 56 Days)
+    </div>
+  </div>
+
+  <!-- 1. Daily Parameters -->
+  <section>
+    <h2 class="section-title">1 · Configure Daily Parameters</h2>
+    <div class="panel controls-grid">
+      <div class="field">
+        <label>Simulated Daily Consumption <span class="val" id="usageVal">1.1 GB</span></label>
+        <input type="range" id="usage" min="0" max="4.0" step="0.1" value="1.1">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="primary" id="runDay">Run Next Day ↦</button>
+      <button id="runWeek">Run 7 Random Days</button>
+      <button class="ghost" id="reset">Reset Simulation</button>
+    </div>
+  </section>
+
+  <!-- 2. System Workflow Steps (1 to 6) -->
+  <section>
+    <h2 class="section-title">2 · Carry-Forward Execution Lifecycle</h2>
+    <div class="pipeline">
+      <div class="step" data-step="1"><span class="n">1</span>Monitors daily data usage</div>
+      <div class="step" data-step="2"><span class="n">2</span>Calculates remaining data</div>
+      <div class="step" data-step="3"><span class="n">3</span>Checks rollover eligibility</div>
+      <div class="step" data-step="4"><span class="n">4</span>Transfers eligible unused data</div>
+      <div class="step" data-step="5"><span class="n">5</span>Updates Vault ledger</div>
+      <div class="step" data-step="6"><span class="n">6</span>Displays updated balance in UI</div>
+    </div>
+  </section>
+
+  <!-- 3. Existing vs Proposed Dual Water Tanks -->
+  <section>
+    <h2 class="section-title">3 · Side-by-Side: Existing System vs. Proposed CC-DCFF</h2>
+    <div class="systems">
+
+      <!-- Existing System Card -->
+      <div class="sys-card existing">
+        <div class="tag">Existing Prepaid System</div>
+        <h3>Unused Data Expires at 23:59:59</h3>
+        <div class="tank-row">
+          <div>
+            <div class="tank"><div class="fill quota" id="tankExisting" style="height:0%"></div></div>
+            <div class="tank-label">Today's Quota</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span class="label">Quota Today</span><span class="num navy" id="exQuota">2.0 GB</span></div>
+            <div class="metric"><span class="label">Used Today</span><span class="num navy" id="exUsed">0.0 GB</span></div>
+            <div class="metric"><span class="label">Lost at Midnight</span><span class="num amber" id="exWasted">0.0 GB</span></div>
+            <div class="metric"><span class="label">Cumulative Lost</span><span class="num amber" id="exCum">0.0 GB</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proposed System Card -->
+      <div class="sys-card proposed">
+        <div class="tag">Proposed System (CC-DCFF)</div>
+        <h3>All Unused Data Preserved in Vault</h3>
+        <div class="tank-row">
+          <div>
+            <div class="tank">
+              <div class="fill carry" id="tankCarry" style="height:0%"></div>
+              <div class="fill quota" id="tankProposed" style="height:0%"></div>
+            </div>
+            <div class="tank-label">Quota + Vault</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span class="label">Total Available Today</span><span class="num navy" id="prAvail">2.0 GB</span></div>
+            <div class="metric"><span class="label">Consumed Today</span><span class="num navy" id="prUsed">0.0 GB</span></div>
+            <div class="metric"><span class="label">Carried into Vault</span><span class="num green" id="prCarry">0.0 GB</span></div>
+            <div class="metric"><span class="label">Cumulative Wastage</span><span class="num amber" id="prCum">0.0 GB</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. Wastage Graph & Cumulative Metrics -->
+  <section>
+    <h2 class="section-title">4 · Wastage Analytics & Reclaimed Bandwidth</h2>
+    <div class="panel">
+      <div style="position:relative;width:100%;height:280px;">
+        <canvas id="wasteChart" role="img" aria-label="Wastage comparison chart"></canvas>
+      </div>
+      <div class="summary-grid">
+        <div class="stat">
+          <div class="lab">Simulated Days</div>
+          <div class="v" id="statDays">0</div>
+          <div class="sub">Total ledger entries recorded</div>
+        </div>
+        <div class="stat">
+          <div class="lab">Total Data Reclaimed</div>
+          <div class="v" id="statSaved">0.0 GB</div>
+          <div class="sub">Saved from forfeiture via Vault</div>
+        </div>
+        <div class="stat">
+          <div class="lab">Wastage Reduction Ratio</div>
+          <div class="v" id="statReduction">0%</div>
+          <div class="sub">Efficiency improvement over existing model</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Day-by-Day Usage Log -->
+  <section>
+    <h2 class="section-title">5 · Daily Usage Ledger</h2>
+    <div class="panel">
+      <div class="log-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Date</th>
+              <th>Consumed</th>
+              <th>Existing Lost</th>
+              <th>Proposed Avail</th>
+              <th>Proposed Used</th>
+              <th>Rollover Saved</th>
+              <th>Proposed Lost</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <strong>CarryNet</strong>
+  </footer>
+</div>
+
+<!-- Plan Recharge Modal -->
+<div class="modal-backdrop" id="rechargeModal">
+  <div class="modal-card">
+    <h3 style="margin-top:0;">Select Prepaid Recharge Plan</h3>
+    <p style="font-size:13px;color:var(--ink-soft);">Choose an active tariff plan to simulate user recharge.</p>
+
+    <div class="plan-opt" onclick="selectPlan('Starter Smart (1.5 GB/Day)', 1.5, 299, 28, this)">
+      <div>
+        <div style="font-weight:700;">Starter Smart (1.5 GB/Day)</div>
+        <div style="font-size:12px;color:var(--ink-soft);">Validity: 28 Days &bull; FUP Cap: 5 GB</div>
+      </div>
+      <div style="font-weight:800;color:var(--accent-dark);">₹299</div>
+    </div>
+
+    <div class="plan-opt selected" onclick="selectPlan('Popular Hero (2.0 GB/Day)', 2.0, 579, 56, this)">
+      <div>
+        <div style="font-weight:700;">Popular Hero (2.0 GB/Day)</div>
+        <div style="font-size:12px;color:var(--ink-soft);">Validity: 56 Days &bull; FUP Cap: 8 GB</div>
+      </div>
+      <div style="font-weight:800;color:var(--accent-dark);">₹579</div>
+    </div>
+
+    <div class="plan-opt" onclick="selectPlan('Heavy Streamer (3.0 GB/Day)', 3.0, 899, 84, this)">
+      <div>
+        <div style="font-weight:700;">Heavy Streamer (3.0 GB/Day)</div>
+        <div style="font-size:12px;color:var(--ink-soft);">Validity: 84 Days &bull; FUP Cap: 12 GB</div>
+      </div>
+      <div style="font-weight:800;color:var(--accent-dark);">₹899</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="ghost" onclick="closeRechargeModal()">Cancel</button>
+      <button class="primary" onclick="confirmRecharge()">Confirm Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal-backdrop" id="logoutModal">
+  <div class="modal-card">
+    <h3 style="margin-top:0;">Log out?</h3>
+    <p style="font-size:13px;color:var(--ink-soft);">Are you sure you want to log out? You'll need to enter your name and phone number again to get back in.</p>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="ghost" onclick="closeLogoutModal()">No, stay</button>
+      <button class="primary" onclick="confirmLogout()">Yes, log out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Confirmation Modal -->
+<div class="modal-backdrop" id="resetModal">
+  <div class="modal-card">
+    <h3 style="margin-top:0;">Restart simulation?</h3>
+    <p style="font-size:13px;color:var(--ink-soft);">Do you want to restart the simulation? All ledger entries, the vault and the graph will be cleared.</p>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+      <button class="ghost" onclick="closeResetModal()">No</button>
+      <button class="primary" onclick="confirmReset()">Yes, restart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====================================================================
+// IN-MEMORY / LOCAL STATE ENGINE
+// ====================================================================
+function getDefaultState(){
+  return {
+    user: { id: 1, name: 'Prepaid Subscriber', phone_number: '+91 98765 43210', email: 'user@example.com' },
+    activePlan: { id: 2, plan_name: 'Popular Hero (2.0 GB/Day)', daily_quota_gb: 2.0, validity_days: 56, price_inr: 579, fup_limit_gb: 8.0 },
+    vault: { current_vault_gb: 0.0, cumulative_saved_gb: 0.0, cumulative_wasted_gb: 0.0 },
+    simDay: 0,
+    exCumWaste: 0.0,
+    prCumWaste: 0.0,
+    logs: []
+  };
+}
+
+let _memoryStore = null;
+
+function loadState(){
+  if(_memoryStore){
+    try {
+      return JSON.parse(_memoryStore);
+    } catch(e){
+      return getDefaultState();
+    }
+  }
+  const defaultState = getDefaultState();
+  saveState(defaultState);
+  return defaultState;
+}
+
+function saveState(state){
+  _memoryStore = JSON.stringify(state);
+}
+
+let db = loadState();
+
+// Daily quota now comes straight from the active plan
+function getQuota(){
+  return db.activePlan.daily_quota_gb || 2.0;
+}
+
+// ====================================================================
+// LOGIN SCREEN LOGIC
+// ====================================================================
+const loginScreen = document.getElementById('loginScreen');
+const mainApp = document.getElementById('mainApp');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+
+loginForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  const nameVal = document.getElementById('loginName').value.trim();
+  const phoneVal = document.getElementById('loginPhone').value.trim();
+
+  if(!nameVal || !phoneVal){
+    loginError.textContent = 'Please enter both your name and phone number.';
+    return;
+  }
+  loginError.textContent = '';
+
+  db.user.name = nameVal;
+  db.user.phone_number = phoneVal;
+  saveState(db);
+
+  loginScreen.style.display = 'none';
+  mainApp.style.display = 'block';
+
+  renderSystemState();
+});
+
+function logout(){
+  mainApp.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPhone').value = '';
+  loginError.textContent = '';
+}
+
+function openLogoutModal(){
+  document.getElementById('logoutModal').style.display = 'flex';
+}
+function closeLogoutModal(){
+  document.getElementById('logoutModal').style.display = 'none';
+}
+function confirmLogout(){
+  closeLogoutModal();
+  logout();
+}
+
+// ====================================================================
+// DOM ELEMENTS & UI CONTROLLERS
+// ====================================================================
+const usageEl = document.getElementById('usage');
+const usageVal = document.getElementById('usageVal');
+
+let selectedPlanData = { name: db.activePlan.plan_name, quota: db.activePlan.daily_quota_gb, price: db.activePlan.price_inr, validity: db.activePlan.validity_days };
+
+function fmt(n){ return (Math.round((n || 0)*100)/100).toFixed(1) + ' GB'; }
+
+function refreshLabels(){
+  usageVal.textContent = fmt(parseFloat(usageEl.value));
+}
+usageEl.addEventListener('input', refreshLabels);
+refreshLabels();
+
+// Chart Setup
+const ctx = document.getElementById('wasteChart');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: 'Existing System (Cumulative Lost)',
+        data: [],
+        borderColor: '#F2A33C',
+        backgroundColor: 'rgba(242,163,60,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointStyle: 'rectRot',
+        tension: 0.25,
+        fill: true
+      },
+      {
+        label: 'Proposed CC-DCFF (Cumulative Lost)',
+        data: [],
+        borderColor: '#DC2626',
+        backgroundColor: 'rgba(220,38,38,0.1)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointStyle: 'circle',
+        tension: 0.25,
+        fill: true
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { size: 12, weight: '600' } } }
+    },
+    scales: {
+      y: { title: { display: true, text: 'Cumulative Wasted Data (GB)' }, beginAtZero: true },
+      x: { title: { display: true, text: 'Simulation Day' } }
+    }
+  }
+});
+
+function animateSteps(){
+  const steps = document.querySelectorAll('.step');
+  steps.forEach(s => s.classList.remove('active'));
+  let i = 0;
+  const iv = setInterval(() => {
+    if(i > 0) steps[i-1].classList.remove('active');
+    if(i < steps.length){
+      steps[i].classList.add('active');
+      i++;
+    } else {
+      clearInterval(iv);
+    }
+  }, 180);
+}
+
+// Render State to UI
+function renderSystemState(){
+  document.getElementById('userName').textContent = db.user.name;
+  document.getElementById('userPhone').textContent = db.user.phone_number;
+  document.getElementById('activePlanBadge').textContent = `Active Plan: ${db.activePlan.plan_name} • ${db.activePlan.validity_days} Days`;
+
+  const tbody = document.getElementById('logBody');
+  tbody.innerHTML = '';
+  chart.data.labels = [];
+  chart.data.datasets[0].data = [];
+  chart.data.datasets[1].data = [];
+
+  let exCum = 0;
+  let prCum = 0;
+
+  db.logs.forEach(l => {
+    exCum += l.existing_wasted_gb;
+    prCum += l.proposed_wasted_gb;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>Day ${l.sim_day}</td>
+      <td>${l.log_date}</td>
+      <td>${fmt(l.consumed_gb)}</td>
+      <td class="amber">${fmt(l.existing_wasted_gb)}</td>
+      <td>${fmt(l.vault_available_gb + l.allocated_quota_gb)}</td>
+      <td>${fmt(l.proposed_used_gb)}</td>
+      <td class="green">${fmt(l.carried_forward_gb)}</td>
+      <td class="amber">${fmt(l.proposed_wasted_gb)}</td>
+    `;
+    tbody.appendChild(tr);
+
+    chart.data.labels.push('Day ' + l.sim_day);
+    chart.data.datasets[0].data.push(Math.round(exCum*100)/100);
+    chart.data.datasets[1].data.push(Math.round(prCum*100)/100);
+  });
+
+  chart.update();
+
+  const lastLog = db.logs[db.logs.length - 1];
+  const quota = getQuota();
+  if(lastLog){
+    updateVisuals(lastLog.allocated_quota_gb, lastLog.consumed_gb, lastLog.existing_wasted_gb, exCum, lastLog.vault_available_gb + lastLog.allocated_quota_gb, lastLog.proposed_used_gb, lastLog.carried_forward_gb, prCum, exCum - prCum, db.logs.length);
+  } else {
+    updateVisuals(quota, 0, 0, 0, quota, 0, 0, 0, 0, 0);
+  }
+}
+
+function updateVisuals(quota, exUsed, exWasted, exCum, prAvail, prUsed, prCarry, prCum, savedTotal, totalDays){
+  document.getElementById('exQuota').textContent = fmt(quota);
+  document.getElementById('exUsed').textContent = fmt(exUsed);
+  document.getElementById('exWasted').textContent = fmt(exWasted);
+  document.getElementById('exCum').textContent = fmt(exCum);
+
+  document.getElementById('prAvail').textContent = fmt(prAvail);
+  document.getElementById('prUsed').textContent = fmt(prUsed);
+  document.getElementById('prCarry').textContent = fmt(prCarry);
+  document.getElementById('prCum').textContent = fmt(prCum);
+
+  const tankMax = Math.max(quota * 2.2, 3);
+  document.getElementById('tankExisting').style.height = Math.min((quota - exWasted)/tankMax*100, 100) + '%';
+  document.getElementById('tankProposed').style.height = Math.min(Math.max(prAvail - prCarry, 0)/tankMax*100, 100) + '%';
+  document.getElementById('tankCarry').style.height = Math.min(prCarry/tankMax*100, 100) + '%';
+
+  document.getElementById('statDays').textContent = totalDays;
+  document.getElementById('statSaved').textContent = fmt(savedTotal);
+  const reduction = exCum > 0 ? Math.round((savedTotal / exCum) * 100) : 0;
+  document.getElementById('statReduction').textContent = Math.max(0, reduction) + '%';
+}
+
+// Run 1 Day Engine Logic
+function executeDay(usageOverride){
+  const simQuota = getQuota();
+  const simUsage = usageOverride !== undefined ? usageOverride : (parseFloat(usageEl.value) || 1.1);
+
+  const currentVault = db.vault.current_vault_gb;
+
+  // Existing System
+  const exUsed = Math.min(simUsage, simQuota);
+  const exWasted = Math.max(simQuota - exUsed, 0);
+  const newExCum = db.exCumWaste + exWasted;
+
+  // Proposed CC-DCFF: ALL unused data carries forward to the next day
+  const available = simQuota + currentVault;
+  const prUsed = Math.min(simUsage, available);
+  const leftover = Math.max(available - prUsed, 0);
+  const carryForward = leftover;
+  const prWastedToday = 0;
+  const newPrCum = db.prCumWaste + prWastedToday;
+
+  const newSimDay = db.simDay + 1;
+  const reclaimedData = newExCum - newPrCum;
+
+  const logEntry = {
+    sim_day: newSimDay,
+    log_date: new Date(Date.now() + newSimDay * 86400000).toISOString().split('T')[0],
+    allocated_quota_gb: simQuota,
+    vault_available_gb: currentVault,
+    consumed_gb: simUsage,
+    existing_wasted_gb: parseFloat(exWasted.toFixed(2)),
+    proposed_used_gb: parseFloat(prUsed.toFixed(2)),
+    carried_forward_gb: parseFloat(carryForward.toFixed(2)),
+    proposed_wasted_gb: parseFloat(prWastedToday.toFixed(2)),
+    total_reclaimed_gb: parseFloat(reclaimedData.toFixed(2))
+  };
+
+  // Commit to state
+  db.simDay = newSimDay;
+  db.vault.current_vault_gb = parseFloat(carryForward.toFixed(2));
+  db.vault.cumulative_saved_gb = parseFloat(reclaimedData.toFixed(2));
+  db.vault.cumulative_wasted_gb = parseFloat(newPrCum.toFixed(2));
+  db.exCumWaste = parseFloat(newExCum.toFixed(2));
+  db.prCumWaste = parseFloat(newPrCum.toFixed(2));
+  db.logs.push(logEntry);
+
+  saveState(db);
+  renderSystemState();
+  animateSteps();
+}
+
+// Event Listeners
+document.getElementById('runDay').addEventListener('click', () => executeDay());
+
+document.getElementById('runWeek').addEventListener('click', () => {
+  const quota = getQuota();
+  let i = 0;
+  const iv = setInterval(() => {
+    const randomUsage = Math.max(0, quota * (0.35 + Math.random()*0.95));
+    executeDay(Math.round(randomUsage*10)/10);
+    i++;
+    if(i >= 7) clearInterval(iv);
+  }, 300);
+});
+
+// Reset Simulation (with Yes / No popup, stays on the dashboard)
+document.getElementById('reset').addEventListener('click', openResetModal);
+
+function openResetModal(){
+  document.getElementById('resetModal').style.display = 'flex';
+}
+function closeResetModal(){
+  document.getElementById('resetModal').style.display = 'none';
+}
+function confirmReset(){
+  const keepUser = { ...db.user };
+  db = getDefaultState();
+  db.user = keepUser;
+  saveState(db);
+
+  usageEl.value = 1.1;
+  refreshLabels();
+  selectedPlanData = { name: db.activePlan.plan_name, quota: db.activePlan.daily_quota_gb, price: db.activePlan.price_inr, validity: db.activePlan.validity_days };
+  document.querySelectorAll('.plan-opt').forEach((opt, i) => opt.classList.toggle('selected', i === 1));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+  closeResetModal();
+  renderSystemState();
+}
+
+// Modal Logic
+function openRechargeModal(){
+  document.getElementById('rechargeModal').style.display = 'flex';
+}
+function closeRechargeModal(){
+  document.getElementById('rechargeModal').style.display = 'none';
+}
+function selectPlan(name, quota, price, validity, el){
+  document.querySelectorAll('.plan-opt').forEach(opt => opt.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPlanData = { name, quota, price, validity };
+}
+function confirmRecharge(){
+  db.activePlan = {
+    plan_name: selectedPlanData.name,
+    daily_quota_gb: selectedPlanData.quota,
+    price_inr: selectedPlanData.price,
+    validity_days: selectedPlanData.validity
+  };
+  saveState(db);
+  closeRechargeModal();
+  renderSystemState();
+}
+
+// NOTE: renderSystemState() runs only after the login form is submitted.
+</script>
+</body>
+</html>
